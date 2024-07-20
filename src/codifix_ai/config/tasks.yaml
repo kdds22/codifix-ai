@@ -139,4 +139,15 @@ evaluate_task:
     Full code kotlin file with the bug solved and 
     comments of it explanations in bullet point format at 
     the start of kotlin file.
+  
+microsoft_teams_task:
+  description: >
+    Your task is to send a notification to the microsoft teams channel. 
+    You will send the summary about it: The error and it solution idea.
+
+    Your final answer should be the message sent to the microsoft teams channel.
+  expected_output: >
+    Full code kotlin file with the bug solved and 
+    comments of it explanations in bullet point format at 
+    the start of kotlin file.
 
