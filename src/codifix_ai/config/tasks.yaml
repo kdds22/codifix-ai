@@ -1,3 +1,10 @@
+config_env_task:
+  description: >
+    Your task is to configure the environment dynamically.
+    With help from your Dynamic Environment Key tool, you only need to use the tool and return the project id configured. 
+  expected_output: >
+    A expected output should be a project id configured correctly.
+
 research_task:
   description: >
     Your task is to analyze and identify the root cause of the firebase error. 
@@ -88,8 +95,8 @@ code_task:
 
     1. Review the provided information:
        - Senior Data Researcher's notes on the reported error
-       - Git Master Engineer's notes on the code context and error background
-       - Chief Software Analyst's notes on the error causes
+       - Git Master Engineer's notes on the code context 
+       - Software Analyst's notes on the error causes
 
     2. Implement the solution following these guidelines:
        - Strictly adhere to the type preservation rule mentioned above

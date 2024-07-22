@@ -16,11 +16,12 @@ file_read_tool = FileReadTool()
 from .models import custom_model as cm
 from .tools import custom_tool as ct
 
+bigquery_config_tool = ct.ConfigureDynamicEnvTool()
 bigquery_research_tool = ct.BigQueryResearchTool()
 git_search_tool = ct.GitSearchTool()
 webhhok_tool = ct.WebhookTool()
 
-human_input_value = True
+human_input_value = False
 
 now = datetime.now().strftime("%Y-%m-%d")
 
@@ -34,6 +35,7 @@ class CodifixAiCrew():
 	def researcher(self) -> Agent:
 		return Agent(
 			config=self.agents_config['researcher'],
+			allow_delegation=False,
 			verbose=True
 		)
 
@@ -41,20 +43,7 @@ class CodifixAiCrew():
 	def git_analyst(self) -> Agent:
 		return Agent(
 			config=self.agents_config['git_analyst'],
-			verbose=True
-		)
-  
-	@agent
-	def software_analyst(self) -> Agent:
-		return Agent(
-			config=self.agents_config['software_analyst'],
-			verbose=True
-		)
-  
-	@agent
-	def chief_software_analyst(self) -> Agent:
-		return Agent(
-			config=self.agents_config['chief_software_analyst'],
+			allow_delegation=False,
 			verbose=True
 		)
   
@@ -62,6 +51,7 @@ class CodifixAiCrew():
 	def software_engineer(self) -> Agent:
 		return Agent(
 			config=self.agents_config['software_engineer'],
+			allow_delegation=False,
 			verbose=True
 		)
   
@@ -69,6 +59,7 @@ class CodifixAiCrew():
 	def qa_software_engineer(self) -> Agent:
 		return Agent(
 			config=self.agents_config['qa_software_engineer'],
+			allow_delegation=False,
 			verbose=True
 		)
   
@@ -76,10 +67,20 @@ class CodifixAiCrew():
 	def cf_qa_software_engineer(self) -> Agent:
 		return Agent(
 			config=self.agents_config['cf_qa_software_engineer'],
+			allow_delegation=False,
 			verbose=True
 		)
   
 	############################
+
+	@task
+	def config_env_task(self) -> Task:
+		return Task(
+			config=self.tasks_config['config_env_task'],
+			agent=self.researcher(),
+   			tools=[bigquery_config_tool],
+			human_input=human_input_value
+		)
 
 	@task
 	def research_task(self) -> Task:
@@ -113,30 +114,12 @@ class CodifixAiCrew():
 		)
 
 	@task
-	def identify_task(self) -> Task:
-		return Task(
-			config=self.tasks_config['identify_task'],
-			agent=self.software_analyst(),
-   			context=[self.research_task(), self.git_file_task()],
-			human_input=human_input_value
-		)
-  
-	@task
-	def suggest_task(self) -> Task:
-		return Task(
-			config=self.tasks_config['suggest_task'],
-			agent=self.chief_software_analyst(),
-			context=[self.research_task(), self.identify_task()],
-			human_input=human_input_value
-		)
-
-	@task
 	def code_task(self) -> Task:
 		return Task(
 			config=self.tasks_config['code_task'],
 			agent=self.software_engineer(),
 			output_json=cm.FileSuggest,
-			context=[self.research_task(), self.identify_task(), self.suggest_task()],
+			context=[self.research_task(), self.git_file_task()],
 			human_input=human_input_value
 		)
   
@@ -146,7 +129,7 @@ class CodifixAiCrew():
 			config=self.tasks_config['review_task'],
 			agent=self.qa_software_engineer(),
       		output_json=cm.FileSuggest,
-			context=[self.research_task(), self.code_task()],
+			context=[self.code_task(), self.git_file_task()],
 			human_input=human_input_value
 		)
 

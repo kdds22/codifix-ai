@@ -56,7 +56,7 @@ def mostrar_erros_por_tipo(path_folder):
             `agility-picking.firebase_crashlytics.com_havan_app_abastecimento_ANDROID` AS t1
             LEFT OUTER JOIN `firebase_crashlytics.latest_issues_analyzed` AS t2 ON t1.issue_id = t2.issue_id
         WHERE
-            t1.event_timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)
+            t1.event_timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY)
             AND t1.error_type = 'FATAL' --OR t1.error_type = 'NON_FATAL'
             AND t2.issue_id IS NULL
             AND t1.issue_id NOT IN ({','.join(f"'{issue_id}'" for issue_id in erros_analisados)})

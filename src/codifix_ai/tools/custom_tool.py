@@ -11,13 +11,19 @@ from crewai_tools import BaseTool
 from ..models import custom_model as cm
 from . import bigquery_script, repo_downloader, extrator_funcao, webhook
 
+class ConfigureDynamicEnvTool(BaseTool):
+    name: str ="Dynamic Environment Key Tool"
+    description: str = ("Configuring dynamic keys on environment.")
+    
+    def _run(self, text: str) -> str:
+        return bigquery_script.config_environment()
+
 class BigQueryResearchTool(BaseTool):
     name: str ="Google BigQuery Research Tool"
     description: str = ("Getting the error data of bigquery "
          "to identify possible error causes.")
     
     def _run(self, text: str) -> str:
-        print(load_dotenv())
         return bigquery_script.start_bigquery('erros')
 
 

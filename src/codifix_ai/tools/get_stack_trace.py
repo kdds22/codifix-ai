@@ -34,7 +34,7 @@ def get_file_list_error(directory_path: str, log: bool = False):
     list_match_unique = []
 
     for file_path in directory_path.iterdir():
-        if file_path.is_file() and file_path.suffix == '.json':
+        if file_path.is_file() and file_path.suffix == '.json' and not file_path.name.startswith('event_id_'):
             with file_path.open(mode='r', encoding='utf-8') as file:
                 content = json.load(file)
 

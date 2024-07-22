@@ -27,10 +27,8 @@ def search_and_copy_files(repo_dir, filenames, destination_dir):
 
 def repo_downloader(repo_dir, error_folder_directory, destinarion_dir):
     # print('Baixando repositório do Projeto...\n')
-    # repo_url = f"https://{os.environ.get("GIT_AZURE_TOKEN")}@dev.azure.com/HavanLabs/TRON/_git/{os.environ.get("GIT_AZURE_REPO")}"
+    repo_url = f"https://{os.environ.get("GIT_AZURE_TOKEN")}@dev.azure.com/HavanLabs/{os.environ.get("GIT_AZURE_REPO")}/_git/{os.environ.get("GIT_AZURE_REPO")}"
 
-    repo_url = "https://{GIT_AZURE_TOKEN}@dev.azure.com/HavanLabs/{SQUAD}/_git/{GIT_AZURE_REPO}"
-    # print(repo_url)
     if not os.path.exists(repo_dir) or not os.listdir(repo_dir):
         # print(f"Clonando repositorio de {repo_url} para {repo_dir}...")
         repo = Repo.clone_from(repo_url, repo_dir)
