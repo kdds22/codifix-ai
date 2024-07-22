@@ -77,25 +77,44 @@ suggest_task:
 
 code_task:
   description: >
-    You will receive code that has had a bug reported and with analysis done by the 
-    best software analyst on your team, you must implement the best solution to 
-    resolve the error using Kotlin, these are the instructions:
+    As a senior Kotlin developer, you are tasked with implementing a solution for a reported bug. You will be provided with code and analysis from various team experts. Your goal is to implement the best solution to resolve the error using Kotlin.
 
-    Instructions
+    Instructions:
     ------------
-    Attention:
-    - Do not change the type of the objects (If to change the type is necessary, create a comment above line as needed)
-    ------------
-              
-    - Use Senior Data Researcher notes to understand the error reported
-    - Use Git Master Enginner Notes to understand the code and the context of the error
-    - Use Chief Software Analyst Notes for better understanding causes of the error
+    ATTENTION:
+    - Do not change the type of the objects
+    - If changing the type is absolutely necessary, create a comment above the line explaining why it's needed
     ------------
 
-    Your Final answer must be the full kotlin code, only the koltin code and nothing else.
-    All your comments explanations should be clear, concise and in brazilian portuguese.
+    1. Review the provided information:
+       - Senior Data Researcher's notes on the reported error
+       - Git Master Engineer's notes on the code context and error background
+       - Chief Software Analyst's notes on the error causes
+
+    2. Implement the solution following these guidelines:
+       - Strictly adhere to the type preservation rule mentioned above
+       - Ensure the solution follows Kotlin best practices and coding standards
+
+    3. Code Modification Rules:
+       - Modify existing code as needed to fix the bug, but preserve object types
+       - Ensure any new additions integrate well with the existing codebase
+
+    4. Documentation:
+       - Add clear and concise comments in Brazilian Portuguese
+       - Comments should explain complex logic, important changes, and the reasoning behind your solutions
+       - If a type change was unavoidable, provide a detailed explanation in the comment
+
+    5. Final Deliverable:
+       - Provide the complete, corrected Kotlin code file
+       - Include only the full Kotlin code in your final answer, no additional explanations outside the code
+
   expected_output: >
-    The entire full code kotlin with the solution implemented.
+    The complete Kotlin code file that includes:
+    - The entire codebase with the implemented solution
+    - Necessary comments in Brazilian Portuguese explaining key changes and complex logic
+    - Any required new functions, classes, or variables to support the bug fix
+    - Comments explaining any unavoidable type changes (if any)
+    - No text outside of the full Kotlin code and comments
 
 review_task:
   description: >
