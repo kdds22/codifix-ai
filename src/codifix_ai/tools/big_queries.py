@@ -7,8 +7,7 @@ from datetime import datetime
 
 from dotenv import load_dotenv
 load_dotenv() 
-
-ignore_files = ['KotlinExtensions.kt', 'CoroutineScheduler.kt', 'DispatchedTask.kt','DispositivoBluetooth.kt','ZebraRFR8500.kt','ContinuationImpl.kt', 'ReaderManager.kt']
+ignore_files = ['LazyJVM.kt','KotlinExtensions.kt', 'CoroutineScheduler.kt', 'DispatchedTask.kt','DispositivoBluetooth.kt','ZebraRFR8500.kt','ContinuationImpl.kt', 'ReaderManager.kt']
 
 def mostrar_erros_por_tipo(path_folder):
 
@@ -21,29 +20,18 @@ def mostrar_erros_por_tipo(path_folder):
     try:
         for file_path in Path(path_folder).iterdir():
             # print(f'File Path: {file_path}\n')
-            if file_path.is_file() and file_path.suffix == '.json' and not file_path.name.startswith('event_id_'):
+            if file_path.is_file() and file_path.suffix == '.json':
                 with file_path.open(mode='r', encoding='utf-8') as json_file:
                     file_name = file_path.name.split('.')[0]
                     erros_analisados.append(file_name)
-            if file_path.is_file() and file_path.name.startswith('event_id_'):
-                with file_path.open(mode='r', encoding='utf-8') as json_file:
-                    file_name = file_path.name.split('.')[0].split('_')[-1]
-                    print(file_name)
-                    eventos_analisados.append(file_name)
     except:
         print("\nExcept: Não foram analisados nenhuma issue...")
-        print("\nExcept: Não foram analisados nenhum evento...")
 
     finally:
         if len(erros_analisados) <= 1:
             print("\nNão foram analisados nenhuma issue ainda...")
             erros_analisados.append('None')
-        if len(eventos_analisados) <= 1:
-            print("\nNão foram analisados nenhum evento ainda...")
-            eventos_analisados.append('None')
 
-
-    # print(f"{','.join(f"'{issue_id}'" for issue_id in erros_analisados)}")
     final_result = []
     client = bigquery.Client()
     query = f"""
@@ -53,6 +41,10 @@ def mostrar_erros_por_tipo(path_folder):
             t1.error_type,
             t4.file,
             t4.symbol,
+            t4.line,
+            t3.title,
+            t3.exception_message,
+            t3.subtitle
         FROM
             `agility-picking.firebase_crashlytics.com_havan_app_abastecimento_ANDROID` AS t1
             LEFT OUTER JOIN `firebase_crashlytics.latest_issues_analyzed` AS t2 ON t1.issue_id = t2.issue_id
@@ -64,11 +56,16 @@ def mostrar_erros_por_tipo(path_folder):
             AND t2.issue_id IS NULL
             AND t1.issue_id NOT IN ({','.join(f"'{issue_id}'" for issue_id in erros_analisados)})
             AND SPLIT(t4.file, '.')[SAFE_OFFSET(1)] = 'kt' --SOMENTE ARQUIVOS KOTLIN
+            AND t4.file NOT IN ({','.join(f"'{file}'" for file in ignore_files)})  --('LazyJVM.kt','KotlinExtensions.kt', 'CoroutineScheduler.kt', 'DispatchedTask.kt','DispositivoBluetooth.kt','ZebraRFR8500.kt','ContinuationImpl.kt', 'ReaderManager.kt')
         GROUP BY
             t1.issue_id,
             t1.error_type,
             t4.file,
-            t4.symbol
+            t4.symbol,
+            t4.line,
+            t3.title,
+            t3.exception_message,
+            t3.subtitle
         ORDER BY
             number_of_crashes DESC
         LIMIT 1;
@@ -85,8 +82,12 @@ def mostrar_erros_por_tipo(path_folder):
             "issue_id": row.issue_id,
             "number_of_crashes": row.number_of_crashes,
             "error_type": row.error_type,
+            "title": row.title,
             "file": row.file,
-            "symbol": row.symbol
+            "line": row.line,
+            "function": row.symbol,
+            "description": row.exception_message,
+            "subtitle": row.subtitle
         }
         
         # print(detalhes_erro)

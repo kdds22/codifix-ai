@@ -107,9 +107,9 @@ class CodifixAiCrew():
 		return Task(
 			config=self.tasks_config['git_file_task'],
 			agent=self.git_analyst(),
-			tools=[directory_read_tool_kotlin, file_read_tool],
-			output_json=cm.GitFileError,
+			tools=[file_read_tool, directory_read_tool_kotlin],
 			context=[self.git_repo_task()],
+			output_json=cm.GitFileError,
 			human_input=human_input_value,
 		)
 
@@ -118,8 +118,8 @@ class CodifixAiCrew():
 		return Task(
 			config=self.tasks_config['code_task'],
 			agent=self.software_engineer(),
-			output_json=cm.FileSuggest,
 			context=[self.research_task(), self.git_file_task()],
+			output_json=cm.FileSuggest,
 			human_input=human_input_value
 		)
   
@@ -128,8 +128,8 @@ class CodifixAiCrew():
 		return Task(
 			config=self.tasks_config['review_task'],
 			agent=self.qa_software_engineer(),
-      		output_json=cm.FileSuggest,
 			context=[self.code_task(), self.git_file_task()],
+      		output_json=cm.FileSuggest,
 			human_input=human_input_value
 		)
 

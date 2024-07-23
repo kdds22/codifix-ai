@@ -4,12 +4,14 @@ from pydantic import BaseModel, Field
 from typing import List
 
 class BigQueryError(BaseModel):
-	title: str = Field(..., description="The main title of error reported")
-	file: str = Field(..., description="The file name of error reported")
-	line: int = Field(..., description="The line number that error occoured")
-	function: str = Field(..., description="The function name blamed by error reported")
-	description: str = Field(..., description="The optional subtitle of error reported")
-	stack_trace: str = Field(..., description="The full stack trace about the error reported")
+    number_of_crashes: int = Field(..., description="The number of crashes of error reported")
+    error_type: str = Field(..., description="The error type reported (FATAL | NON-FATAL)")
+    title: str = Field(..., description="The main title of error reported")
+    file: str = Field(..., description="The file name of error reported")
+    line: int = Field(..., description="The line number that error occoured")
+    function: str = Field(..., description="The function name blamed by error reported")
+    description: str = Field(..., description="The optional exception message of error reported")
+    subtitle: str = Field(..., description="The optional subtitle about the error reported")
 
 class GitFileError(BaseModel):
 	full_kotlin_code: str = Field(..., description="The full code of kotlin file thats contains the error reported")

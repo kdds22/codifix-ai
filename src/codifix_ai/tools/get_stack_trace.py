@@ -5,7 +5,7 @@ from pathlib import Path
 
 # Definir a regex para arquivos Kotlin -> *.kt
 default_pattern = re.compile(r'[A-Za-z]+(?:[A-Za-z0-9]+)*\.kt')
-ignore_files = ['CoroutineScheduler.kt', 'DispatchedTask.kt','ZebraRFR8500.kt','ContinuationImpl.kt', 'ReaderManager.kt']
+ignore_files = ['LazyJVM.kt','KotlinExtensions.kt', 'CoroutineScheduler.kt', 'DispatchedTask.kt','DispositivoBluetooth.kt','ZebraRFR8500.kt','ContinuationImpl.kt', 'ReaderManager.kt']
 
 def search_pattern_in_stack_trace(json_data, pattern, key_search):
     matches = []

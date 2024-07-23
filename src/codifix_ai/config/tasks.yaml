@@ -43,7 +43,7 @@ git_file_task:
     1. Locate and list the necessary files.
     2. Your Final answer must be the entire code kotlin file, only the full kotlin code and nothing else. 
   expected_output: >
-    A entire reported code error kotlin file.
+    A entire reported code error kotlin file. Without omitted any data of the file.
 
 identify_task:
   description: >
