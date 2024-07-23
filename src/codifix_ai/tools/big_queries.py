@@ -225,16 +225,16 @@ def buscar_blame_frame_por_issue_id(issue_id: str, path_folder, erros_analisados
 def salvar_dados(path_folder,detalhes_erro):
 
     erros_por_arquivo = {}
-    if detalhes_erro.file not in ignore_files:
-        if detalhes_erro.file not in erros_por_arquivo:
-            erros_por_arquivo[detalhes_erro.file] = []
+    if detalhes_erro['file'] not in ignore_files:
+        if detalhes_erro['file'] not in erros_por_arquivo:
+            erros_por_arquivo[detalhes_erro['file']] = []
 
-        if detalhes_erro not in erros_por_arquivo[detalhes_erro.file]:
-            erros_por_arquivo[detalhes_erro.file].append(detalhes_erro)
+        if detalhes_erro['file'] not in erros_por_arquivo[detalhes_erro['file']]:
+            erros_por_arquivo[detalhes_erro['file']].append(detalhes_erro)
             
     if len(erros_por_arquivo) > 0:
         os.makedirs(path_folder, exist_ok=True)
-        file_name = f"{path_folder}/{detalhes_erro.issue_id}.json"
+        file_name = f"{path_folder}/{detalhes_erro['issue_id']}.json"
         with open(file_name, 'w') as json_file:
             json.dump(erros_por_arquivo, json_file, indent=4)
             
