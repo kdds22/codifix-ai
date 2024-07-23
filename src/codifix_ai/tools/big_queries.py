@@ -51,20 +51,24 @@ def mostrar_erros_por_tipo(path_folder):
             DISTINCT t1.issue_id,
             COUNT(DISTINCT t1.event_id) AS number_of_crashes,
             t1.error_type,
-            t1.event_id
+            t4.file,
+            t4.symbol,
         FROM
             `agility-picking.firebase_crashlytics.com_havan_app_abastecimento_ANDROID` AS t1
             LEFT OUTER JOIN `firebase_crashlytics.latest_issues_analyzed` AS t2 ON t1.issue_id = t2.issue_id
+            LEFT JOIN UNNEST(t1.exceptions) as t3 on t3.blamed = True
+            LEFT JOIN UNNEST(t3.frames) as t4 on t4.owner = 'DEVELOPER'
         WHERE
-            t1.event_timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 14 DAY)
+            t1.event_timestamp >= TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 28 DAY)
             AND t1.error_type = 'FATAL' --OR t1.error_type = 'NON_FATAL'
             AND t2.issue_id IS NULL
             AND t1.issue_id NOT IN ({','.join(f"'{issue_id}'" for issue_id in erros_analisados)})
-            AND t1.event_id NOT IN ({','.join(f"'{event_id}'" for event_id in eventos_analisados)})
+            AND SPLIT(t4.file, '.')[SAFE_OFFSET(1)] = 'kt' --SOMENTE ARQUIVOS KOTLIN
         GROUP BY
             t1.issue_id,
             t1.error_type,
-            t1.event_id
+            t4.file,
+            t4.symbol
         ORDER BY
             number_of_crashes DESC
         LIMIT 1;
@@ -81,10 +85,11 @@ def mostrar_erros_por_tipo(path_folder):
             "issue_id": row.issue_id,
             "number_of_crashes": row.number_of_crashes,
             "error_type": row.error_type,
-            "event_id": row.event_id
+            "file": row.file,
+            "symbol": row.symbol
         }
         
-        print(detalhes_erro)
+        # print(detalhes_erro)
 
         main_error_type = row.error_type
 
@@ -97,7 +102,7 @@ def mostrar_erros_por_tipo(path_folder):
         if tipo_erro not in erros_por_tipo:
             continue
         for erro in erros_por_tipo[tipo_erro]:
-            final_result.append(buscar_blame_frame_por_issue_id(erro['issue_id'], path_folder, erros_analisados=erros_analisados))
+            final_result.append(salvar_dados(path_folder,erro))
     if final_result == [{}]:
         return mostrar_erros_por_tipo(path_folder)
     return final_result
@@ -168,7 +173,7 @@ def buscar_blame_frame_por_issue_id(issue_id: str, path_folder, erros_analisados
         blame_frame.file,
         blame_frame.line,
         blame_frame.symbol,
-        event_id
+        exceptions
     FROM `agility-picking.firebase_crashlytics.com_havan_app_abastecimento_ANDROID`
     WHERE
         error_type IS NOT NULL 
@@ -215,6 +220,24 @@ def buscar_blame_frame_por_issue_id(issue_id: str, path_folder, erros_analisados
             json.dump(erros_por_arquivo, json_file, indent=4)
 
     #TODO: salvar erros por stackTrace, e não somente por issue_id
+    return erros_por_arquivo
+
+def salvar_dados(path_folder,detalhes_erro):
+
+    erros_por_arquivo = {}
+    if detalhes_erro.file not in ignore_files:
+        if detalhes_erro.file not in erros_por_arquivo:
+            erros_por_arquivo[detalhes_erro.file] = []
+
+        if detalhes_erro not in erros_por_arquivo[detalhes_erro.file]:
+            erros_por_arquivo[detalhes_erro.file].append(detalhes_erro)
+            
+    if len(erros_por_arquivo) > 0:
+        os.makedirs(path_folder, exist_ok=True)
+        file_name = f"{path_folder}/{detalhes_erro.issue_id}.json"
+        with open(file_name, 'w') as json_file:
+            json.dump(erros_por_arquivo, json_file, indent=4)
+            
     return erros_por_arquivo
 
 if __name__ == "__main__":
